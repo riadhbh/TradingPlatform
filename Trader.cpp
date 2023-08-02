@@ -115,12 +115,26 @@ void Trader::setDateOfBirth(const string& dateOfBirth)
     DateOfBirth = dateOfBirth;
 }
 
-
-
 ostream& operator<<(ostream& out, const Trader& trader) {
-    out << "TraderID: " << trader.TraderID << ", FirstName: " << trader.FirstName
-        << ", LastName: " << trader.LastName << ", Email: " << trader.Email
-        << ", Password: " << trader.Password << ", PhoneNumber: " << trader.PhoneNumber
-        << ", DateOfBirth: " << trader.DateOfBirth;
+    out << "TraderID: \n" << trader.TraderID <<endl
+        << "FirstName: \n" << trader.FirstName << endl
+        << "LastName: \n" << trader.LastName << endl
+        << "Email: \n" << trader.Email << endl
+        << "Password: \n" << "********" << endl
+        << "PhoneNumber: \n" << trader.PhoneNumber << endl
+        << "DateOfBirth: \n" << trader.DateOfBirth << endl;
     return out;
+}
+
+bool Trader::operator!=(const Trader& t) const
+{
+    return (
+            t.getTraderID() != TraderID ||
+            t.getDateOfBirth() != DateOfBirth ||
+            t.getFirstName() != FirstName ||
+            t.getLastName() != LastName ||
+            t.getEmail() != Email ||
+            t.getPassword() != Password ||
+            t.getPhoneNumber() != PhoneNumber
+        );
 }

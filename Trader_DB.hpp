@@ -6,11 +6,12 @@ class Trader_DB
 {
 	public:
 		//DB CRUDS
-		static bool login(string, string);
-		static void createAccount(const Trader&);
-		static void updateAccount(const Trader&);
-		static void deleteAccount(const string&);
+		static string login(string, string);
+		static void createTraderAccount(const Trader&);
+		static void updateTraderAccount(const Trader&);
+		static void deleteTraderAccount(const string&);
 		static bool traderEmailExistsinDB(const std::string& email);
 		static bool traderPhoneExistsinDB(const std::string& phoneNumber);
+		static Trader LoadTraderfromDB(string traderID);
 };
 

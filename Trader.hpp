@@ -67,6 +67,8 @@ public:
     // Friend function to overload the << operator
     friend ostream& operator<<(ostream& out, const Trader& trader);
 
+    // Define the != operator as a member function
+    bool operator!=(const Trader& t) const;
 
 private:
     string TraderID;

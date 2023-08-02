@@ -4,12 +4,13 @@
 #include "TRADINGPLATFORM_DEF.hpp"
 #include "MySQLConnector.hpp"
 
-bool Trader_DB::login(string mail, string password)
+string Trader_DB::login(string mail, string password)
 {
+    string traderID = "";
     try
     {
 
-        std::string query = "select count(*) from " + string(TRADER_ENTITY) + " where email like ? and password like ?";
+        std::string query = "select traderid from " + string(TRADER_ENTITY) + " where email like ? and password = ?";
         std::unique_ptr<sql::PreparedStatement> pstmt(MySQLConnector::getSQLConnection()->prepareStatement(query));
 
         pstmt->setString(1, mail);
@@ -18,20 +19,19 @@ bool Trader_DB::login(string mail, string password)
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
 
         if (res->next()) {
-            int count = res->getInt(1);
-            return count == 1;
+            traderID = res->getString(1);
         }
     }
     catch (sql::SQLException& e)
     {
         cerr << "SQL Exception: " << e.what() << endl;
-        return false;
+        return "";
     }
 
-    return false;
+    return traderID;
 }
 
-void Trader_DB::createAccount(const Trader& t)
+void Trader_DB::createTraderAccount(const Trader& t)
 {
     try
     {
@@ -48,21 +48,54 @@ void Trader_DB::createAccount(const Trader& t)
         pstmt->setString(7, t.getDateOfBirth());
 
         pstmt->executeQuery();
-        cout << "Trader inserted successfully into the database!" << endl;
+        cout << "Trader account successfully created !" << endl;
     }
     catch (sql::SQLException& e) 
     {
         cerr << "SQL Exception: " << e.what() << endl;
-        cout << "Failed to insert trader into the database." << endl;
+        cerr << "Failed to insert trader into the database." << endl;
     }
 }
 
-void Trader_DB::updateAccount(const Trader&)
+void Trader_DB::updateTraderAccount(const Trader& t)
 {
+    try
+    {
+
+        std::string query = "update " + string(TRADER_ENTITY) + " set email = ?, password = ?, phonenumber = ? WHERE traderid = ?";
+        std::unique_ptr<sql::PreparedStatement> pstmt(MySQLConnector::getSQLConnection()->prepareStatement(query));
+
+        pstmt->setString(1, t.getEmail());
+        pstmt->setString(2, t.getPassword());
+        pstmt->setString(3, t.getPhoneNumber());
+        pstmt->setString(4, t.getTraderID());
+
+        pstmt->executeQuery();
+
+        cout << "Trader Account successfully updated!" << endl;
+    }
+    catch (sql::SQLException& e)
+    {
+        cerr << "SQL Exception: " << e.what() << endl;
+    }
 }
 
-void Trader_DB::deleteAccount(const string&)
+void Trader_DB::deleteTraderAccount(const string& traderID)
 {
+    try
+    {
+
+        std::string query = "DELETE FROM " + string(TRADER_ENTITY) + " WHERE traderid = ?";
+        std::unique_ptr<sql::PreparedStatement> pstmt(MySQLConnector::getSQLConnection()->prepareStatement(query));
+
+        pstmt->setString(1, traderID);
+
+        pstmt->executeQuery();
+    }
+    catch (sql::SQLException& e)
+    {
+        cerr << "SQL Exception: " << e.what() << endl;
+    }
 }
 
 bool Trader_DB::traderEmailExistsinDB(const std::string& email)
@@ -113,4 +146,36 @@ bool Trader_DB::traderPhoneExistsinDB(const std::string& phoneNumber)
         cerr << "SQL Exception: " << e.what() << endl;
     }
     return false;
+}
+
+Trader Trader_DB::LoadTraderfromDB(string traderID) 
+{
+    Trader t ("", "", "", "", "", "", "");
+    try
+    {
+
+        std::string query = "select firstname, lastname, email, password, phonenumber, dateofbirth from " + string(TRADER_ENTITY) + " where traderid = ?";
+        std::unique_ptr<sql::PreparedStatement> pstmt(MySQLConnector::getSQLConnection()->prepareStatement(query));
+
+        pstmt->setString(1, traderID);
+
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+
+        if (res->next()) {
+            t.setTraderID(traderID);
+            t.setFirstName(res->getString(1));
+            t.setLastName(res->getString(2));
+            t.setEmail(res->getString(3));
+            t.setPassword(res->getString(4));
+            t.setPhoneNumber(res->getString(5));
+            t.setDateOfBirth(res->getString(6));
+        }
+    }
+    catch (sql::SQLException& e)
+    {
+        cerr << "SQL Exception: " << e.what() << endl;
+        return t;
+    }
+
+    return t;
 }
