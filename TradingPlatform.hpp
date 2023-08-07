@@ -12,5 +12,6 @@ public :
 	static void CreateTraderAccountMenu();
 	static void TraderMenu();
 	static void UpdateTraderMenu();
-	static void DeleteTraderMenu();
+	static bool DeleteTraderMenu();
+	static void ManageInstrumentsMenu();
 };

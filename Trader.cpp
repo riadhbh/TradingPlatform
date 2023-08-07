@@ -21,8 +21,8 @@
    * @param PhoneNumber
    * @param DateOfBirth
    */
-Trader::Trader(string TraderID, string FirstName, string LastName, string Email, string Password, string PhoneNumber, string DateOfBirth):
-TraderID(TraderID), FirstName(FirstName), LastName(LastName), Email(Email), Password(Password), PhoneNumber(PhoneNumber), DateOfBirth(DateOfBirth)
+Trader::Trader(string TraderID, string FirstName, string LastName, string Email, string Password, string PhoneNumber, string DateOfBirth, bool is_admin, bool is_active):
+TraderID(TraderID), FirstName(FirstName), LastName(LastName), Email(Email), Password(Password), PhoneNumber(PhoneNumber), DateOfBirth(DateOfBirth), is_active(is_active), is_admin(is_admin)
 {
 
 }
@@ -84,6 +84,10 @@ string Trader::getDateOfBirth() const
 {
     return DateOfBirth;
 }
+bool Trader::isAdmin() const 
+{
+    return is_admin;
+}
 
 // Setters
 void Trader::setTraderID(const string& id)
@@ -115,6 +119,11 @@ void Trader::setDateOfBirth(const string& dateOfBirth)
     DateOfBirth = dateOfBirth;
 }
 
+void Trader::setAdmin(bool new_admin_status) 
+{
+    is_admin = new_admin_status;
+}
+
 ostream& operator<<(ostream& out, const Trader& trader) {
     out << "TraderID: \n" << trader.TraderID <<endl
         << "FirstName: \n" << trader.FirstName << endl
@@ -135,6 +144,7 @@ bool Trader::operator!=(const Trader& t) const
             t.getLastName() != LastName ||
             t.getEmail() != Email ||
             t.getPassword() != Password ||
-            t.getPhoneNumber() != PhoneNumber
+            t.getPhoneNumber() != PhoneNumber ||
+            t.isAdmin() != is_admin
         );
 }

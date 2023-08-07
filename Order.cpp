@@ -15,12 +15,12 @@
   /**
    * @param OrderID
    * @param TraderID
-   * @param InstrumentID
+   * @param ISINCode
    * @param OrderType
    * @param Qty
    * @param Price
    * @param TimeStamp
    */
-Order::Order(string OrderID, string TraderID, string InstrumentID, ordertype OrderType, double Qty, double price, time_t TimeStamp) {
-
+Order::Order(string OrderID, string TraderID, string ISINCode, ordertype OrderType, unsigned int Qty, unsigned int RemainingQty, double price, time_t TimeStamp)
+{
 }

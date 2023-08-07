@@ -4,8 +4,6 @@
 using namespace std;
 class Trader_IO
 {
-private:
-    static Trader currentTrader;
 public :
     //reading and checking Trader termnial input data
     static string readDateOfbirth();
@@ -15,4 +13,5 @@ public :
     static string readPhoneNumber();
     static string readName(const string& prompt);
     static Trader readTraderFromTerminal();
+    static bool readStatus(const string& prompt);
 };

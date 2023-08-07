@@ -132,6 +132,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Instrument.cpp" />
+    <ClCompile Include="Instrument_DB.cpp" />
+    <ClCompile Include="Instrument_IO.cpp" />
+    <ClCompile Include="Instrument_IO.hpp" />
     <ClCompile Include="MySQLConnector.cpp" />
     <ClCompile Include="Order.cpp" />
     <ClCompile Include="Trader.cpp" />
@@ -142,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Instrument.hpp" />
+    <ClInclude Include="Instrument_DB.hpp" />
     <ClInclude Include="MySQLConnector.hpp" />
     <ClInclude Include="Order.hpp" />
     <ClInclude Include="Trader.hpp" />

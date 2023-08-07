@@ -20,20 +20,21 @@ class Order
         /**
          * @param OrderID
          * @param TraderID
-         * @param InstrumentID
+         * @param ISINCode
          * @param OrderType
          * @param Qty
          * @param Price
          * @param TimeStamp
          */
         Order() = delete;
-        Order(string OrderID, string TraderID, string InstrumentID, ordertype OrderType, double Qty, double price, time_t TimeStamp);
+        Order(string OrderID, string TraderID, string ISINCode, ordertype OrderType, unsigned int Qty, unsigned int RemainingQty, double price, time_t TimeStamp);
     private:
         string OrderID;
         string TraderID;
-        string InstrumentID;
+        string ISINCode;
         ordertype OrderType;
         unsigned int Qty;
+        unsigned int RemainingQty;
         double Price;
         time_t TimeStamp;
 };

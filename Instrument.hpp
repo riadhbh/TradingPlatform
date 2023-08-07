@@ -12,18 +12,20 @@ class Instrument
 {
 public:
     /**
-     * @param InstrumentID
+     * @param ISINCode
      * @param Name
      * @param Quantity
      * @param ExpiryDate
      * @param StrikePrice
      */
     Instrument() = delete;
-    Instrument(string InstrumentID, string Name, unsigned int Quantity, time_t ExpiryDate, double StrikePrice);
+    Instrument(string ISINCode, string Name, unsigned int Quantity, double StrikePrice, bool is_active = true);
 
+    //Setters
     /**
      * @param name
      */
+    void setISINCode(string ISICode);
     void setName(string name);
 
     /**
@@ -36,18 +38,21 @@ public:
      */
     void setStrikePrice(double price);
 
-    /**
-     * @param date
-     */
-    void setExpiryDate(time_t date);
+    void setActive(bool status);
 
-    unsigned int getQuantity();
+    // Getters
+    string getISINCode() const;
+    string getName() const;
+    unsigned int getQuantity() const;
+    double getStrikePrice() const;
+    bool isActive() const;
+
 
 private:
-    string InstrumentID;
+    string ISINCode;
     string Name;
     unsigned int Quantity;
-    time_t ExpiryDate;
     double StrikePrice;
+    bool is_active;
 };
 

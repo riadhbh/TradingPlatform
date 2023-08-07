@@ -5,7 +5,7 @@ using namespace std;
 class Trader_DB
 {
 	public:
-		//DB CRUDS
+		//DB CRUD
 		static string login(string, string);
 		static void createTraderAccount(const Trader&);
 		static void updateTraderAccount(const Trader&);

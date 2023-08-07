@@ -179,6 +179,7 @@ Trader Trader_IO::readTraderFromTerminal()
 {
 
     string traderid = "", firstname = "", lastname = "", email = "", password = "", phoneNumber = "", dateOfBirth = "";
+    bool is_admin = false;
 
     traderid = generateUUID();
 
@@ -194,7 +195,9 @@ Trader Trader_IO::readTraderFromTerminal()
 
     dateOfBirth = Trader_IO::readDateOfbirth();
 
-    return Trader(traderid, firstname, lastname, email, password, phoneNumber, dateOfBirth);
+    is_admin = Trader_IO::readStatus("Are you an admin (Y/N) ?");
+
+    return Trader(traderid, firstname, lastname, email, password, phoneNumber, dateOfBirth, is_admin);
 }
 
 string Trader_IO::readDateOfbirth()
@@ -367,4 +370,22 @@ string Trader_IO::readSinglePassword(const string& prompt)
 
     return password;
 
+}
+
+bool Trader_IO::readStatus(const string& prompt)
+{
+    char ch='*';
+    cout << prompt << endl;
+    cin>>ch;
+    ch = tolower(ch);
+
+    while (ch != 'n' && ch != 'y')
+    {
+        cout << "Invalid choice" << endl;
+        cout << prompt << endl;
+        cin >> ch;
+        ch = tolower(ch);
+    }
+
+    return (ch == 'y');
 }

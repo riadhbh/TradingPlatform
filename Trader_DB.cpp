@@ -10,7 +10,7 @@ string Trader_DB::login(string mail, string password)
     try
     {
 
-        std::string query = "select traderid from " + string(TRADER_ENTITY) + " where email like ? and password = ?";
+        std::string query = "select traderid from " + string(TRADER_ENTITY) + " where is_active = true and email like ? and password = ?";
         std::unique_ptr<sql::PreparedStatement> pstmt(MySQLConnector::getSQLConnection()->prepareStatement(query));
 
         pstmt->setString(1, mail);
@@ -37,7 +37,7 @@ void Trader_DB::createTraderAccount(const Trader& t)
     {
         sql::PreparedStatement* pstmt = nullptr;
 
-        pstmt = MySQLConnector::getSQLConnection()->prepareStatement("INSERT INTO " + string(TRADER_ENTITY) + " (TraderID, FirstName, LastName, Email, Password, PhoneNumber, DateOfBirth) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        pstmt = MySQLConnector::getSQLConnection()->prepareStatement("INSERT INTO " + string(TRADER_ENTITY) + " (TraderID, FirstName, LastName, Email, Password, PhoneNumber, DateOfBirth, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
         pstmt->setString(1, t.getTraderID());
         pstmt->setString(2, t.getFirstName());
@@ -46,6 +46,7 @@ void Trader_DB::createTraderAccount(const Trader& t)
         pstmt->setString(5, t.getPassword());
         pstmt->setString(6, t.getPhoneNumber());
         pstmt->setString(7, t.getDateOfBirth());
+        pstmt->setBoolean(8, t.isAdmin());
 
         pstmt->executeQuery();
         cout << "Trader account successfully created !" << endl;
@@ -85,11 +86,9 @@ void Trader_DB::deleteTraderAccount(const string& traderID)
     try
     {
 
-        std::string query = "DELETE FROM " + string(TRADER_ENTITY) + " WHERE traderid = ?";
+        std::string query = "update " + string(TRADER_ENTITY) + " set is_active = false WHERE traderid = ?";
         std::unique_ptr<sql::PreparedStatement> pstmt(MySQLConnector::getSQLConnection()->prepareStatement(query));
-
         pstmt->setString(1, traderID);
-
         pstmt->executeQuery();
     }
     catch (sql::SQLException& e)
@@ -119,9 +118,8 @@ bool Trader_DB::traderEmailExistsinDB(const std::string& email)
     catch (sql::SQLException& e)
     {
         cerr << "SQL Exception: " << e.what() << endl;
+        return false;
     }
-
-    return false;
 }
 
 bool Trader_DB::traderPhoneExistsinDB(const std::string& phoneNumber)
@@ -144,8 +142,8 @@ bool Trader_DB::traderPhoneExistsinDB(const std::string& phoneNumber)
     catch (sql::SQLException& e)
     {
         cerr << "SQL Exception: " << e.what() << endl;
+        return false;
     }
-    return false;
 }
 
 Trader Trader_DB::LoadTraderfromDB(string traderID) 
@@ -154,7 +152,7 @@ Trader Trader_DB::LoadTraderfromDB(string traderID)
     try
     {
 
-        std::string query = "select firstname, lastname, email, password, phonenumber, dateofbirth from " + string(TRADER_ENTITY) + " where traderid = ?";
+        std::string query = "select firstname, lastname, email, password, phonenumber, dateofbirth, is_admin from " + string(TRADER_ENTITY) + " where traderid = ?";
         std::unique_ptr<sql::PreparedStatement> pstmt(MySQLConnector::getSQLConnection()->prepareStatement(query));
 
         pstmt->setString(1, traderID);
@@ -169,6 +167,7 @@ Trader Trader_DB::LoadTraderfromDB(string traderID)
             t.setPassword(res->getString(4));
             t.setPhoneNumber(res->getString(5));
             t.setDateOfBirth(res->getString(6));
+            t.setAdmin(res->getBoolean(7));
         }
     }
     catch (sql::SQLException& e)

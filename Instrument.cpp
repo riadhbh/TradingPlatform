@@ -13,45 +13,72 @@
 
 
   /**
-   * @param InstrumentID
+   * @param ISINCode
    * @param Name
    * @param Quantity
    * @param ExpiryDate
    * @param StrikePrice
    */
-Instrument::Instrument(string InstrumentID, string Name, unsigned int Quantity, time_t ExpiryDate, double StrikePrice) {
+Instrument::Instrument(string ISINCode, string Name, unsigned int Quantity, double StrikePrice, bool isActive):
+ISINCode(ISINCode), Name(Name), Quantity(Quantity), StrikePrice(StrikePrice), is_active(is_active)
+{
+}
 
+void Instrument::setISINCode(string ISINcode)
+{
+    ISINCode = ISINcode;
 }
 
 /**
  * @param name
  */
-void Instrument::setName(string name) {
-
+void Instrument::setName(string name)
+{
+    Name = name;
 }
 
 /**
  * @param qty
  */
-void Instrument::setQuantity(unsigned int qty) {
-
+void Instrument::setQuantity(unsigned int qty) 
+{
+    Quantity = qty;
 }
 
 /**
  * @param price
  */
-void Instrument::setStrikePrice(double price) {
-
+void Instrument::setStrikePrice(double price) 
+{
+    StrikePrice = price;
 }
 
-/**
- * @param date
- */
-void Instrument::setExpiryDate(time_t date) {
-
+void Instrument::setActive(bool status)
+{
+    is_active = status;
 }
 
-unsigned int Instrument::getQuantity() {
+string Instrument::getISINCode() const
+{
+    return ISINCode;
+}
 
-    return 0;
+string Instrument::getName() const
+{
+    return Name;
+}
+
+unsigned int Instrument::getQuantity() const{
+
+    return Quantity;
+}
+
+double Instrument::getStrikePrice() const
+{
+    return StrikePrice;
+}
+
+bool Instrument::isActive() const
+{
+    return is_active;
 }

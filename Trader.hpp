@@ -26,7 +26,7 @@ public:
      * @param DateOfBirth
      */
 
-    Trader(string TraderID, string FirstName, string LastName, string Email, string Password, string PhoneNumber, string DateOfBirth);
+    Trader(string TraderID, string FirstName, string LastName, string Email, string Password, string PhoneNumber, string DateOfBirth, bool is_admin = false, bool is_active = true);
     virtual ~Trader();
     /**
     * 
@@ -54,6 +54,7 @@ public:
     string getPassword() const;
     string getPhoneNumber() const;
     string getDateOfBirth() const;
+    bool isAdmin() const;
 
     // Setters
     void setTraderID(const string& id);
@@ -63,6 +64,7 @@ public:
     void setPassword(const string& password);
     void setPhoneNumber(const string& phoneNumber);
     void setDateOfBirth(const string& dateOfBirth);
+    void setAdmin(bool new_admin_status);
 
     // Friend function to overload the << operator
     friend ostream& operator<<(ostream& out, const Trader& trader);
@@ -78,7 +80,7 @@ private:
     string Password;
     string PhoneNumber;
     string DateOfBirth;
-    //string VATCode;
-    //vector<Order> OrderBook;
+    bool is_active;
+    bool is_admin;
 };
 
