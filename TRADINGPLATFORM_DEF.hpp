@@ -6,7 +6,10 @@
 
 
 #pragma once
-#include <rpc.h>
+#include <iostream>
+#include <iomanip>
+#include <random>
+#include <sstream>
 #include <string>
 
 /* MYSQL DEFS */

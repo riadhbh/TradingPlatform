@@ -2,10 +2,16 @@
 #include <sstream>
 #include <ctime>
 #include <iostream>
+#include <string>
+// Include Windows header for Windows
+#ifdef _WIN32
+#include <conio.h>
+#else // Include Unix headers for Unix
+#include <termios.h>
+#include <unistd.h>
+#endif
 #include <cctype> // For isalpha and isdigit
-#include <conio.h> // For _getch
 #include <limits> // Include for numeric_limits
-#include <iostream>
 #include "TRADINGPLATFORM_DEF.hpp" // for generateUUID();
 #include "Trader_DB.hpp"
 
@@ -159,7 +165,7 @@ bool isOver18YearsOld(const string& dateStr)
 
     // Convert the timestamp to a local time struct tm
     tm currentTimeinfo;
-    localtime_s(&currentTimeinfo, &now);
+    localtime_r(&now, &currentTimeinfo);
 
     // Calculate the age difference
     int age = currentTimeinfo.tm_year - dobTimeinfo.tm_year;
@@ -349,27 +355,47 @@ string Trader_IO::readPhoneNumber()
 
 string Trader_IO::readSinglePassword(const string& prompt)
 {
-    string password;
-    cout << prompt << endl;
 
+    std::string password;
+    std::cout << prompt << std::endl;
+
+#ifdef _WIN32
     char ch;
-    while ((ch = _getch()) != '\r') { // Read characters until Enter (Enter is represented by carriage return '\r')
-        if (ch == '\b') { // Handle Backspace
+    while ((ch = _getch()) != '\r') {
+        if (ch == '\b') {
             if (!password.empty()) {
-                cout << "\b \b"; // Move the cursor back, print a space to overwrite the last character, move the cursor back again
+                std::cout << "\b \b";
                 password.pop_back();
             }
+        } else {
+            //std::cout << '*';
+            password.push_back(ch);
         }
-        else {
-            cout << '*'; // Display '*' instead of the actual character
+    }
+#else
+    struct termios oldSettings, newSettings;
+    tcgetattr(STDIN_FILENO, &oldSettings);
+    newSettings = oldSettings;
+    newSettings.c_lflag &= ~(ECHO | ECHOE | ECHOK | ECHONL);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newSettings);
+
+    char ch;
+    while (read(STDIN_FILENO, &ch, 1) == 1 && ch != '\n') {
+        if (ch == 127) {
+            if (!password.empty()) {
+                std::cout << "\b \b";
+                password.pop_back();
+            }
+        } else {
+            //std::cout << '*';
             password.push_back(ch);
         }
     }
 
-    cout << endl;
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldSettings);
+#endif
 
     return password;
-
 }
 
 bool Trader_IO::readStatus(const string& prompt)

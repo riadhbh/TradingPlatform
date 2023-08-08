@@ -2,14 +2,18 @@
 
 std::string generateUUID()
 {
-    UUID uuid;
-    UuidCreate(&uuid);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 15);
 
-    unsigned char* str;
-    UuidToStringA(&uuid, &str);
+    const char* hexChars = "0123456789abcdef";
+    std::stringstream ss;
 
-    std::string uuidStr(reinterpret_cast<char*>(str));
-    RpcStringFreeA(&str);
+    for (int i = 0; i < 32; ++i) {
+        ss << hexChars[dis(gen)];
+        if (i == 7 || i == 11 || i == 15 || i == 19)
+            ss << '-';
+    }
 
-    return uuidStr;
+    return ss.str();
 }
