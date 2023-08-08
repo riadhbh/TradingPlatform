@@ -391,7 +391,7 @@ string Trader_IO::readSinglePassword(const string& prompt)
                 password.pop_back();
             }
         } else {
-            //std::cout << '*';
+            std::cout << '*';
             password.push_back(ch);
         }
     }
@@ -399,6 +399,7 @@ string Trader_IO::readSinglePassword(const string& prompt)
     tcsetattr(STDIN_FILENO, TCSANOW, &oldSettings);
 #endif
 
+    cout << endl;
     return password;
 }
 

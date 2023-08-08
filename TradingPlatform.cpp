@@ -151,7 +151,7 @@ void TradingPlatform::ManageInstrumentsMenu()
 
 void TradingPlatform::TraderMenu()
 {
-    cout << endl <<"*** Welcome " << currentTrader.getFirstName() << " ! ***" << endl;
+    cout <<"*** Welcome " << currentTrader.getFirstName() << " ! ***" << endl;
     char c = '*';
     do
     {
