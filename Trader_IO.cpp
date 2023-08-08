@@ -165,8 +165,12 @@ bool isOver18YearsOld(const string& dateStr)
 
     // Convert the timestamp to a local time struct tm
     tm currentTimeinfo;
-    localtime_r(&now, &currentTimeinfo);
+#ifdef _WIN32
 
+    localtime_s(&currentTimeinfo, &now);
+#else
+    localtime_r(&now, &currentTimeinfo);
+#endif
     // Calculate the age difference
     int age = currentTimeinfo.tm_year - dobTimeinfo.tm_year;
     if (currentTimeinfo.tm_mon <= dobTimeinfo.tm_mon ||
@@ -368,7 +372,7 @@ string Trader_IO::readSinglePassword(const string& prompt)
                 password.pop_back();
             }
         } else {
-            //std::cout << '*';
+            std::cout << '*';
             password.push_back(ch);
         }
     }
