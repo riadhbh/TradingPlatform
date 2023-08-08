@@ -38,5 +38,5 @@ std::string Instrument_IO::readISINCode() {
 
 Instrument Instrument_IO::readInstrumentFromTerminal()
 {
-	return Instrument();
+	//return Instrument();
 }
