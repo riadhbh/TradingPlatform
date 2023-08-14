@@ -6,6 +6,7 @@
 
 
 #include "Instrument.hpp"
+#include "Order.hpp"
 
  /**
   * Instrument implementation
@@ -84,9 +85,13 @@ bool Instrument::isActive() const
 }
 
 ostream& operator<<(ostream& out, const Instrument& inst) {
-    out << "ISIN code: \n" << inst.getISINCode() << endl
-        << "Price: \n" << inst.getStrikePrice() << endl
-        << "Quantity: \n" << inst.getQuantity() << endl
-        << "Active?: \n" << (inst.isActive() > 0 ? "YES": "NO") << endl;
+    out << "ISIN code: " << inst.getISINCode() << " | "
+        << "Price: " << inst.getStrikePrice() << " | "
+        << "Quantity: " << inst.getQuantity() << " | "
+        << "Active: " << (inst.isActive()? "YES": "NO") << endl;
     return out;
+}
+
+void Instrument::executeOrder(Order& order)
+{
 }

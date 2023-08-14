@@ -8,6 +8,7 @@
 #include <ctime>
 #include <string>
 using namespace std;
+class Order;
 
 class Instrument
 {
@@ -47,6 +48,8 @@ public:
     unsigned int getQuantity() const;
     double getStrikePrice() const;
     bool isActive() const;
+
+    void executeOrder(Order& order);
 
     // Friend function to overload the << operator
     friend ostream& operator<<(ostream& out, const Instrument& inst);

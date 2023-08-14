@@ -7,8 +7,6 @@
 #include "TradingPlatform.hpp"
 
 
-
-
 using namespace std;
 
 static Trader currentTrader("", "", "", "", "", "", "");

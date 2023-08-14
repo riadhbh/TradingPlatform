@@ -137,6 +137,8 @@
     <ClCompile Include="Instrument_IO.hpp" />
     <ClCompile Include="MySQLConnector.cpp" />
     <ClCompile Include="Order.cpp" />
+    <ClCompile Include="Order_DB.cpp" />
+    <ClCompile Include="Order_IO.cpp" />
     <ClCompile Include="Trader.cpp" />
     <ClCompile Include="Trader_DB.cpp" />
     <ClCompile Include="Trader_IO.cpp" />
@@ -148,6 +150,8 @@
     <ClInclude Include="Instrument_DB.hpp" />
     <ClInclude Include="MySQLConnector.hpp" />
     <ClInclude Include="Order.hpp" />
+    <ClInclude Include="Order_DB.hpp" />
+    <ClInclude Include="Order_IO.hpp" />
     <ClInclude Include="Trader.hpp" />
     <ClInclude Include="Trader_DB.hpp" />
     <ClInclude Include="Trader_IO.hpp" />

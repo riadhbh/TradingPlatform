@@ -14,6 +14,9 @@
 #include "Trader_DB.hpp"
 #include "Instrument_IO.hpp"
 #include "Instrument_DB.hpp"
+#include "Order_IO.hpp"
+#include "Order_DB.hpp"
+
 class TradingPlatform
 {
 public :
