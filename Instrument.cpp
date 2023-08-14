@@ -82,3 +82,11 @@ bool Instrument::isActive() const
 {
     return is_active;
 }
+
+ostream& operator<<(ostream& out, const Instrument& inst) {
+    out << "ISIN code: \n" << inst.getISINCode() << endl
+        << "Price: \n" << inst.getStrikePrice() << endl
+        << "Quantity: \n" << inst.getQuantity() << endl
+        << "Active?: \n" << (inst.isActive() > 0 ? "YES": "NO") << endl;
+    return out;
+}

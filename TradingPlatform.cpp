@@ -6,13 +6,8 @@
 
 #include "TradingPlatform.hpp"
 
-#include "Instrument.hpp"
-#include "Order.hpp"
-#include "Trader.hpp"
 
-#include <iostream>
-#include "Trader_IO.hpp"
-#include "Trader_DB.hpp"
+
 
 using namespace std;
 
@@ -75,6 +70,50 @@ void TradingPlatform::UpdateTraderMenu()
     }
 }
 
+
+void TradingPlatform::UpdateInstrumentMenu(Instrument& inst)
+{
+    cout << "Update Instrument information" << endl;
+    char c = '*';
+    string cPassword="";
+    try {
+        do
+        {
+            cout << "0) Back to previous menu" << endl;
+            cout << "1) Update price" << endl;
+            cout << "2) Update quantity" << endl;
+            cout << "3) Update status" << endl;
+            cin >> c;
+            switch (c)
+            {
+            case '0': break;
+            case '1': inst.setStrikePrice(Instrument_IO::readStrikePrice());
+                      cout<<"Do you Want to update another thing? (Y/N)"<<endl;
+                      cin >> c;
+                      break;
+            case '2': inst.setQuantity(Instrument_IO::readQuantity()); 
+                      cout << "Do you Want to update another thing? (Y/N)" << endl; 
+                      cin >> c;
+                      break;
+            case '3': inst.setActive(Instrument_IO::readIsActive());
+                        break;
+            default: cout << "Invalid choice, please try again" << endl; break;
+            }
+            
+        } while (c != '0' && tolower(c) != 'n');
+
+        // Collect all the updates and send them to the DB in one single request
+
+            Instrument_DB::updateInstrument(inst);
+
+            cout << inst;
+        
+    }
+    catch(exception & e)
+    { 
+        cerr << e.what() << endl;
+    }
+}
 bool TradingPlatform::DeleteTraderMenu()
 {
 
@@ -127,23 +166,54 @@ void TradingPlatform::ManageInstrumentsMenu()
         cout << "1) View Instruments" << endl;
         cout << "2) Add a new Instrument" << endl;
         cout << "3) Update an instrument" << endl;
-        cout << "3) Disable an instrument" << endl;
         cin >> c;
 
         switch (c)
         {
         case '0': break;
-        case '1': cout << "*** List of instruments ***" << endl;
+        case '1': { 
+            cout << "*** List of instruments ***" << endl;
             cout << "Tradable instruments" << endl;
+            vector<Instrument> lst = Instrument_DB::loadAllInstruments();
+            for (Instrument i : lst){
+                if(i.isActive()) cout << i << endl;
+            }
             cout << "Disabled instruments" << endl;
+            for (Instrument i : lst){
+                if(!i.isActive()) cout << i << endl;
+            }
+        }
             break;
         case '2': 
+        {
             cout << "Create a new instrument" << endl;
-            break;
-        case '3': cout << "Please enter the instrument ISIN code " << endl;
-            break;
-        default: cout << "Invalid choice, please try again" << endl; break;
+            Instrument inst = Instrument_IO::readInstrumentFromTerminal();
+            Instrument_DB::createInstrument(inst);
         }
+            break;
+        case '3': 
+        {
+            while(true){
+
+                cout << "Please enter the instrument ISIN code " << endl;
+                string isincode = "";
+                cin >> isincode;
+                if(Instrument_DB::ISINCodeExistsinDB(isincode)){
+
+                    Instrument inst = Instrument_DB::LoadInstrumentfromDB(isincode);
+                    TradingPlatform::UpdateInstrumentMenu(inst);
+
+                    break;
+                }
+                else cout << "Invalid ISIN code!" << endl;
+            }
+        }
+            break;
+        default: 
+            cout << "Invalid choice, please try again" << endl; 
+            break;
+        }
+    
 
     } while (c != '0' && tolower(c) != 'n');
 

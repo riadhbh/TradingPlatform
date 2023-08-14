@@ -4,6 +4,7 @@
  * 14-06-2023:MRBH:creation
  */
 #pragma once
+#include <iostream>
 #include <ctime>
 #include <string>
 using namespace std;
@@ -46,6 +47,9 @@ public:
     unsigned int getQuantity() const;
     double getStrikePrice() const;
     bool isActive() const;
+
+    // Friend function to overload the << operator
+    friend ostream& operator<<(ostream& out, const Instrument& inst);
 
 
 private:

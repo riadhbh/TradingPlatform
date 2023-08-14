@@ -6,6 +6,11 @@ using namespace std;
 class Instrument_IO
 {
 public :
-	string readISINCode();
+	static string readISINCode();
+	static string readInstrumentName();
+	static double readStrikePrice();
+	static int    readQuantity();
+	static bool   readIsActive();
+
 	static Instrument readInstrumentFromTerminal();
 };

@@ -9,12 +9,13 @@ void Instrument_DB::createInstrument(const Instrument& i)
     {
         sql::PreparedStatement* pstmt = nullptr;
 
-        pstmt = MySQLConnector::getSQLConnection()->prepareStatement("INSERT INTO " + string(INSTRUMENT_ENTITY) + " (ISINCode, Name, Quantity, StrikePrice) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        pstmt = MySQLConnector::getSQLConnection()->prepareStatement("INSERT INTO " + string(INSTRUMENT_ENTITY) + " (ISINCode, name, Quantity, StrikePrice, is_active) VALUES (?, ?, ?, ?, ?)");
 
         pstmt->setString(1, i.getISINCode());
         pstmt->setString(2, i.getName());
         pstmt->setUInt(3, i.getQuantity());
         pstmt->setDouble(4, i.getStrikePrice());
+        pstmt->setBoolean(5,i.isActive());
 
         pstmt->executeQuery();
         cout << "Instrument successfully added !" << endl;
@@ -32,7 +33,7 @@ Instrument Instrument_DB::LoadInstrumentfromDB(string ISINCode)
     try
     {
 
-        std::string query = "select Name, Quantity, SrtrikePrice, is_active from " + string(TRADER_ENTITY) + " where ISINCode = ?";
+        std::string query = "select name, Quantity, StrikePrice, is_active from " + string(INSTRUMENT_ENTITY) + " where ISINCode = ?";
         std::unique_ptr<sql::PreparedStatement> pstmt(MySQLConnector::getSQLConnection()->prepareStatement(query));
 
         pstmt->setString(1, ISINCode);
@@ -53,6 +54,37 @@ Instrument Instrument_DB::LoadInstrumentfromDB(string ISINCode)
     }
 
     return i;
+}
+
+vector<Instrument> Instrument_DB::loadAllInstruments(){
+    
+    vector<Instrument> result;
+    try
+    {
+
+        std::string query = "select ISINCode, name, Quantity, StrikePrice, is_active from " + string(INSTRUMENT_ENTITY);
+        std::unique_ptr<sql::PreparedStatement> pstmt(MySQLConnector::getSQLConnection()->prepareStatement(query));
+
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+
+        while (res->next()) 
+        {
+            Instrument i("", "", 0, 0.0, true);
+            i.setISINCode(res->getString(1));
+            i.setName(res->getString(2));
+            i.setQuantity(res->getUInt(3));
+            i.setStrikePrice(res->getDouble(4));
+            i.setActive(res->getBoolean(5));
+            result.push_back(i);
+        }
+    }
+    catch (sql::SQLException& e)
+    {
+        cerr << "SQL Exception: " << e.what() << endl;
+        return result;
+    }
+
+    return result;
 }
 
 void Instrument_DB::updateInstrument(const Instrument& i)
