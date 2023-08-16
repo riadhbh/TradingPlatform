@@ -76,7 +76,7 @@ int Instrument_IO::readQuantity(){
         cout << "Enter the instrument quantity: ";
         cin >> instrument_quantity;
         if(instrument_quantity > 0) break;
-        else cout << "Instrument strike quantity zero or negative!" << endl;
+        else cout << "Instrument quantity cannot be zero or negative!" << endl;
     }
     
 

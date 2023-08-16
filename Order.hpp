@@ -12,6 +12,7 @@
 using namespace std;
 
 enum ordertype { BUY, SELL };
+enum ExecStatus {X0, X, TX};//zero execusion, partial executed, Fully executed
 
 class Order
 {
@@ -27,7 +28,7 @@ class Order
          * @param TimeStamp
          */
         Order() = delete;
-        Order(string OrderID, string TraderID, string ISINCode, ordertype OrderType, unsigned int Qty, unsigned int RemainingQty, double price, time_t TimeStamp);
+        Order(string OrderID, string TraderID, string ISINCode, ordertype OrderType, unsigned int Qty, unsigned int RemainingQty, double price, time_t TimeStamp, ExecStatus execSatus = X0);
         
         // Getters
         std::string getOrderID() const;
@@ -38,6 +39,7 @@ class Order
         unsigned int getRemainingQty() const;
         double getPrice() const;
         time_t getTimeStamp() const;
+        ExecStatus getExecStatus() const;
 
         // Setters
         void setOrderID(const std::string& newOrderID);
@@ -48,15 +50,25 @@ class Order
         void setRemainingQty(unsigned int newRemainingQty);
         void setPrice(double newPrice);
         void setTimeStamp(time_t newTimeStamp);
+        void setExecStatus(ExecStatus newExecStatus);
 
         // Declaration of the << operator overload as a friend function
         friend std::ostream& operator<<(std::ostream& os, const Order& order);
 
+        // Define the == operator as a member function
+        bool operator==(const Order& o) const;
+
+        // Define the != operator as a member function
+        bool operator!=(const Order& o) const;
+
+        static string execStatusToString(const ExecStatus es);
+        static ExecStatus stringToExecStatus(const string str);
     private:
         string OrderID;
         string TraderID;
         string ISINCode;
         ordertype OrderType;
+        ExecStatus execSatus;
         unsigned int Qty;
         unsigned int RemainingQty;
         double Price;

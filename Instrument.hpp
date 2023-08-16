@@ -7,8 +7,8 @@
 #include <iostream>
 #include <ctime>
 #include <string>
+#include "Order.hpp"
 using namespace std;
-class Order;
 
 class Instrument
 {
@@ -54,6 +54,11 @@ public:
     // Friend function to overload the << operator
     friend ostream& operator<<(ostream& out, const Instrument& inst);
 
+    // Define the == operator as a member function
+    bool operator==(const Instrument& i) const;
+
+    // Define the != operator as a member function
+    bool operator!=(const Instrument& i) const;
 
 private:
     string ISINCode;

@@ -9,7 +9,7 @@ void Order_DB::createOrder(const Order& o)
     {
         sql::PreparedStatement* pstmt = nullptr;
         string query = "INSERT " + string(ORDER_ENTITY) +
-            " Orders (OrderID, TraderID, ISINCode, OrderType, Qty, RemainingQty, Price, TimeStamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            " (OrderID, TraderID, ISINCode, OrderType, Qty, RemainingQty, Price, UnixTimeStamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         pstmt = MySQLConnector::getSQLConnection()->prepareStatement(query);
 
@@ -23,22 +23,22 @@ void Order_DB::createOrder(const Order& o)
         pstmt->setUInt64(8, o.getTimeStamp());
 
         pstmt->executeQuery();
-        cout << "Trader account successfully created !" << endl;
+        cout << "Order successfully created !" << endl;
     }
     catch (sql::SQLException& e)
     {
         cerr << "SQL Exception: " << e.what() << endl;
-        cerr << "Failed to insert trader into the database." << endl;
+        cerr << "Failed to insert Order into the database." << endl;
     }
 }
 
 Order Order_DB::loadOrderfromDB(string orderID)
 {
-    Order o("", "", "", BUY, 0, 0, 0, 0);
+    Order o("", "", "", BUY, 0, 0, 0.0, 0);
     try
     {
 
-        std::string query = "select traderID, ISINCode, OrderType, Qty, RemainingQty, price, TimeStamp from " + string(ORDER_ENTITY) + " where orderID = ?";
+        std::string query = "select traderID, ISINCode, OrderType, Qty, RemainingQty, price, UnixTimeStamp, execStatus from " + string(ORDER_ENTITY) + " where orderID = ?";
         std::unique_ptr<sql::PreparedStatement> pstmt(MySQLConnector::getSQLConnection()->prepareStatement(query));
 
         pstmt->setString(1, orderID);
@@ -54,6 +54,7 @@ Order Order_DB::loadOrderfromDB(string orderID)
             o.setRemainingQty(res->getUInt(5));
             o.setPrice(res->getDouble(6));
             o.setTimeStamp(res->getUInt64(7));
+            o.setExecStatus(Order::stringToExecStatus(res->getString(8)));
         }
     }
     catch (sql::SQLException& e)
@@ -71,7 +72,7 @@ vector<Order> Order_DB::loadTraderOrdersfromDB(const string& traderid)
     try
     {
 
-        std::string query = "select orderID, ISINCode, OrderType, Qty, RemainingQty, price, TimeStamp from " + string(ORDER_ENTITY) + " where traderID = ?";
+        std::string query = "select orderID, ISINCode, OrderType, Qty, RemainingQty, price, UnixTimeStamp, execStatus from " + string(ORDER_ENTITY) + " where traderID = ?";
         std::unique_ptr<sql::PreparedStatement> pstmt(MySQLConnector::getSQLConnection()->prepareStatement(query));
         
         pstmt->setString(1, traderid);
@@ -80,7 +81,7 @@ vector<Order> Order_DB::loadTraderOrdersfromDB(const string& traderid)
 
         while (res->next())
         {
-            Order o("", "", "", BUY, 0, 0, 0, 0);
+            Order o("", "", "", BUY, 0, 0, 0.0, 0);
 
             o.setTraderID(traderid);
             o.setOrderID(res->getString(1));
@@ -90,6 +91,7 @@ vector<Order> Order_DB::loadTraderOrdersfromDB(const string& traderid)
             o.setRemainingQty(res->getUInt(5));
             o.setPrice(res->getDouble(6));
             o.setTimeStamp(res->getUInt64(7));
+            o.setExecStatus(Order::stringToExecStatus(res->getString(8)));
 
             result.push_back(o);
         }

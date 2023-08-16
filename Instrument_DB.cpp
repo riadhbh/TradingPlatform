@@ -56,7 +56,7 @@ Instrument Instrument_DB::LoadInstrumentfromDB(string ISINCode)
     return i;
 }
 
-vector<Instrument> Instrument_DB::loadAllInstruments(){
+vector<Instrument> Instrument_DB::loadAllInstruments(bool includeDisabledInstruments){
     
     vector<Instrument> result;
     try

@@ -20,6 +20,21 @@
 
 #define TRADER_ENTITY     "trader"
 #define INSTRUMENT_ENTITY "instrument"
-#define ORDER_ENTITY      "order"
+#define ORDER_ENTITY      "orders"
 
+/* Common functions */
 std::string generateUUID();
+
+template <typename T>
+long long getIndex(const std::vector<T>& vec, T elem) {
+    auto it = std::find_if(vec.begin(), vec.end(), [&elem](const T& e) 
+        {
+            return e == elem;
+        });
+
+    if (it != vec.end()) {
+        return std::distance(vec.begin(), it);
+    }
+
+    return -1; // Not found
+}

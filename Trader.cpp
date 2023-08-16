@@ -135,6 +135,20 @@ ostream& operator<<(ostream& out, const Trader& trader) {
     return out;
 }
 
+bool Trader::operator==(const Trader& t) const
+{
+    return (
+        t.getTraderID() == TraderID &&
+        t.getDateOfBirth() == DateOfBirth &&
+        t.getFirstName() == FirstName &&
+        t.getLastName() == LastName &&
+        t.getEmail() == Email &&
+        t.getPassword()  == Password &&
+        t.getPhoneNumber() == PhoneNumber &&
+        t.isAdmin() == is_admin
+        );
+}
+
 bool Trader::operator!=(const Trader& t) const
 {
     return (

@@ -6,7 +6,6 @@
 
 
 #include "Instrument.hpp"
-#include "Order.hpp"
 
  /**
   * Instrument implementation
@@ -94,4 +93,26 @@ ostream& operator<<(ostream& out, const Instrument& inst) {
 
 void Instrument::executeOrder(Order& order)
 {
+}
+
+bool Instrument::operator==(const Instrument& i) const
+{
+    return 
+            (
+            i.getISINCode() == ISINCode &&
+            i.getName() == Name &&
+            i.getQuantity() == Quantity &&
+            i.getStrikePrice() == StrikePrice
+            );
+}
+
+bool Instrument::operator!=(const Instrument& i) const
+{
+    return 
+        (
+        i.getISINCode() != ISINCode ||
+        i.getName() != Name ||
+        i.getQuantity() != Quantity ||
+        i.getStrikePrice() != StrikePrice
+        );
 }

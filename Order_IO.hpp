@@ -4,6 +4,9 @@ class Order_IO
 {
 
 public:
-	static Order readOrderFromTerminal();
+	static ordertype readOrderType();
+	static unsigned int readOrderQantity();
+	static double readOrderPrice();
+	static Order readOrderFromTerminal(string TraderID, string ISINCode);
 };
 

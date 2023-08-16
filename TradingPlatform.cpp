@@ -5,11 +5,16 @@
  */
 
 #include "TradingPlatform.hpp"
+#include "TRADINGPLATFORM_DEF.hpp"
 
 
 using namespace std;
 
 static Trader currentTrader("", "", "", "", "", "", "");
+static vector<Instrument> allInstruments;
+static vector<Instrument> tradableInstruments;
+static vector<Instrument> disabledInstruments;
+static vector<Order> orders;
 
 void TradingPlatform::UpdateTraderMenu()
 {
@@ -74,6 +79,8 @@ void TradingPlatform::UpdateInstrumentMenu(Instrument& inst)
     cout << "Update Instrument information" << endl;
     char c = '*';
     string cPassword="";
+    Instrument tmpInst = inst;
+
     try {
         do
         {
@@ -85,15 +92,15 @@ void TradingPlatform::UpdateInstrumentMenu(Instrument& inst)
             switch (c)
             {
             case '0': break;
-            case '1': inst.setStrikePrice(Instrument_IO::readStrikePrice());
+            case '1': tmpInst.setStrikePrice(Instrument_IO::readStrikePrice());
                       cout<<"Do you Want to update another thing? (Y/N)"<<endl;
                       cin >> c;
                       break;
-            case '2': inst.setQuantity(Instrument_IO::readQuantity()); 
+            case '2': tmpInst.setQuantity(Instrument_IO::readQuantity());
                       cout << "Do you Want to update another thing? (Y/N)" << endl; 
                       cin >> c;
                       break;
-            case '3': inst.setActive(Instrument_IO::readIsActive());
+            case '3': tmpInst.setActive(Instrument_IO::readIsActive());
                         break;
             default: cout << "Invalid choice, please try again" << endl; break;
             }
@@ -101,10 +108,12 @@ void TradingPlatform::UpdateInstrumentMenu(Instrument& inst)
         } while (c != '0' && tolower(c) != 'n');
 
         // Collect all the updates and send them to the DB in one single request
-
-            Instrument_DB::updateInstrument(inst);
-
+        if (tmpInst != inst)
+        {
+            Instrument_DB::updateInstrument(tmpInst);
+            inst = tmpInst;
             cout << inst;
+        }  
         
     }
     catch(exception & e)
@@ -171,21 +180,24 @@ void TradingPlatform::ManageInstrumentsMenu()
         case '0': break;
         case '1': { 
             cout << "*** List of instruments ***" << endl;
-            cout << "Tradable instruments" << endl;
-            vector<Instrument> lst = Instrument_DB::loadAllInstruments();
-            for (Instrument i : lst){
-                if(i.isActive()) cout << i << endl;
-            }
-            cout << "Disabled instruments" << endl;
-            for (Instrument i : lst){
-                if(!i.isActive()) cout << i << endl;
-            }
+            
+            cout << "Tradable instruments : " << endl;
+            for (Instrument i : tradableInstruments)
+                cout << i << endl;
+  
+
+            cout << "Disabled instruments: " << endl;
+            for (Instrument i : disabledInstruments)
+                cout << i << endl; 
+   
         }
             break;
         case '2': 
         {
             cout << "Create a new instrument" << endl;
             Instrument inst = Instrument_IO::readInstrumentFromTerminal();
+            allInstruments.push_back(inst);
+            tradableInstruments.push_back(inst);
             Instrument_DB::createInstrument(inst);
         }
             break;
@@ -199,6 +211,24 @@ void TradingPlatform::ManageInstrumentsMenu()
                 if(Instrument_DB::ISINCodeExistsinDB(isincode)){
 
                     Instrument inst = Instrument_DB::LoadInstrumentfromDB(isincode);
+                    /*
+                    unsigned long long index = getIndex(allInstruments, inst);
+                    if (index != -1)
+                    {
+                        allInstruments[index] = inst;
+
+                        if (allInstruments[index].isActive())
+                        {
+                            index = getIndex(tradableInstruments, inst);
+                            tradableInstruments[index] = inst;
+                        }
+                        else
+                        {
+                            index = getIndex(disabledInstruments, inst);
+                            disabledInstruments[index] = inst;
+                        }
+                    }
+                    */
                     TradingPlatform::UpdateInstrumentMenu(inst);
 
                     break;
@@ -219,6 +249,21 @@ void TradingPlatform::ManageInstrumentsMenu()
 
 void TradingPlatform::TraderMenu()
 {
+
+    allInstruments = Instrument_DB::loadAllInstruments(currentTrader.isAdmin());
+
+    for (Instrument i : allInstruments)
+        if (i.isActive())
+            tradableInstruments.push_back(i);
+
+    if (currentTrader.isAdmin())
+    {
+        for (Instrument i : allInstruments) 
+            if (!i.isActive())
+                disabledInstruments.push_back(i);
+
+    }
+
     cout <<"*** Welcome " << currentTrader.getFirstName() << " ! ***" << endl;
     char c = '*';
     do
@@ -227,8 +272,9 @@ void TradingPlatform::TraderMenu()
         cout << "1) View account information" << endl;
         cout << "2) View orderbook" << endl;
         cout << "3) Delete account" << endl;
+        cout << "4) Place order" << endl;
         if(currentTrader.isAdmin())
-            cout << "4) Manage instruments" << endl;
+            cout << "5) Manage instruments" << endl;
         cin >> c;
         switch (c)
         {
@@ -242,7 +288,33 @@ void TradingPlatform::TraderMenu()
         case '3': if(DeleteTraderMenu())
                         c = '0';//logout
                   break;
-        case '4': if (currentTrader.isAdmin())
+        case '4': {
+                    char ch = '*';
+                    cout << "Tradable instruments : " << endl;
+                    unsigned long long n = tradableInstruments.size();
+                    for (unsigned long long i=0; i<n;i++)
+                        cout <<"Index [" << i << "] = " << tradableInstruments[i]<<endl;
+                    while (tolower(ch) != 'y' && tolower(ch) != 'n')
+                    {
+                        cout << "Place Order ? (Y/N)" << endl;
+                        cin >> ch;
+                    }
+
+                    if (tolower(ch) == 'y')
+                    {
+                        long long index = -1;
+                        while (index<0 && index>n)
+                        {
+                            cout << "Please enter the instrument Index from the list above" << endl;
+                            cin >> index;
+                        }
+                        
+                        Order CurrentOrder = Order_IO::readOrderFromTerminal(currentTrader.getTraderID(), tradableInstruments[index].getISINCode());
+                        orders.push_back(CurrentOrder);
+                        Order_DB::createOrder(CurrentOrder);                       
+                    }
+                  }break;
+        case '5': if (currentTrader.isAdmin())
                   {
                     ManageInstrumentsMenu();
                   }break;
